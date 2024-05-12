@@ -6,26 +6,26 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <div class="container mx-auto px-4">
-      <header class="bg-white py-4 shadow-md">
-        <nav class="flex justify-between items-center">
-          <a href="#" class="text-xl font-bold">
-            KSA Sports
-          </a>
-          <div>
-            <a href="#about" class="mx-4 hover:text-blue-500">
+      {/* Header with Navigation, using gradient and typography enhancements */}
+      <header className="bg-gradient-to-r from-blue-700 to-green-700 text-white py-4 shadow-md">
+        <div className="container mx-auto px-4 flex justify-between items-center">
+          <h1 className="text-xl font-bold">KSA Sports</h1>
+          <nav>
+            <a href="#about" className="mx-4 hover:text-blue-300">
               About
             </a>
-            <a href="#services" class="mx-4 hover:text-blue-500">
+            <a href="#services" className="mx-4 hover:text-blue-300">
               Services
             </a>
-            <a href="#contact" class="mx-4 hover:text-blue-500">
+            <a href="#contact" className="mx-4 hover:text-blue-300">
               Contact
             </a>
-          </div>
-        </nav>
+          </nav>
+        </div>
       </header>
       {children}
-      <footer class="text-center p-4 bg-gray-900 text-white">
+      {/* Footer Section with minimalistic approach */}
+      <footer className="text-center p-4 bg-gray-900 text-white">
         <p>Your company name, 2023</p>
       </footer>
     </div>
