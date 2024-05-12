@@ -13,10 +13,10 @@ const Layout = ({ children }) => {
             <Link href="dashboard" className="px-4 hover:underline">
               Home
             </Link>
-            <Link href="/events" className="px-4 hover:underline">
+            <Link href="events" className="px-4 hover:underline">
               Events
             </Link>
-            <Link href="/clubs" className="px-4 hover:underline">
+            <Link href="clubs" className="px-4 hover:underline">
               Clubs
             </Link>
             <Link href="/profile" className="px-4 hover:underline">

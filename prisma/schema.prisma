@@ -1,0 +1,97 @@
+// This is your Prisma schema file
+// It is used to define your data model and generate migrations
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Club {
+  clubId      Int       @id @default(autoincrement())
+  name        String
+  description String?
+  logoUrl     String?
+  foundedDate DateTime?
+}
+
+model Comment {
+  commentId Int      @id @default(autoincrement())
+  userId    Int?
+  postId    Int?
+  content   String
+  timestamp DateTime @default(now())
+  user      User?    @relation(fields: [userId], references: [userId])
+  post      Post?    @relation(fields: [postId], references: [postId])
+}
+
+model Event {
+  eventId     Int       @id @default(autoincrement())
+  name        String
+  description String?
+  startDate   DateTime?
+  endDate     DateTime?
+  location    String?
+  organizerId Int?
+  organizer   User?     @relation(name: "OrganizerEvent", fields: [organizerId], references: [userId])
+  Review      Review[]
+  Ticket      Ticket[]
+}
+
+model User {
+  userId          Int       @id @default(autoincrement())
+  username        String
+  email           String    @unique
+  password        String
+  role            UserRole
+  comments        Comment[]
+  posts           Post[]
+  organizedEvents Event[]   @relation(name: "OrganizerEvent")
+  reviews         Review[]
+}
+
+enum UserRole {
+  NormalUser
+  Organizer
+  Admin
+}
+
+model Media {
+  mediaId Int     @id @default(autoincrement())
+  type    String?
+  url     String
+  postId  Int?
+  post    Post?   @relation(fields: [postId], references: [postId])
+}
+
+model Post {
+  postId    Int       @id @default(autoincrement())
+  userId    Int?
+  content   String
+  timestamp DateTime  @default(now())
+  user      User?     @relation(fields: [userId], references: [userId])
+  comments  Comment[]
+  medias    Media[]
+}
+
+model Review {
+  reviewId Int     @id @default(autoincrement())
+  userId   Int?
+  eventId  Int?
+  rating   Int?
+  comment  String?
+  user     User?   @relation(fields: [userId], references: [userId])
+  event    Event?  @relation(fields: [eventId], references: [eventId])
+}
+
+model Ticket {
+  ticketId    Int      @id @default(autoincrement())
+  eventId     Int?
+  price       Float?
+  seatNumber  String?
+  isAvailable Boolean?
+  event       Event?   @relation(fields: [eventId], references: [eventId])
+}
