@@ -1,10 +1,9 @@
-
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 export async function GET(request) {
   try {
-    const items = await prisma.club.findMany();
+    const items = await prisma.club.findMany({});
     return new Response(JSON.stringify(items), {
       headers: { "Content-Type": "application/json" },
       status: 200,

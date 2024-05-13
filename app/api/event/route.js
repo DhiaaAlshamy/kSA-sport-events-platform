@@ -3,7 +3,18 @@ const prisma = new PrismaClient();
 
 export async function GET(request) {
   try {
-    const items = await prisma.event.findMany();
+    const items = await prisma.event.findMany({
+      include: {
+        organizer: true,
+        medias: true,
+        _count: {
+          select: {
+            Ticket: true,
+            Review: true,
+          },
+        },
+      },
+    });
     return new Response(JSON.stringify(items), {
       headers: { "Content-Type": "application/json" },
       status: 200,

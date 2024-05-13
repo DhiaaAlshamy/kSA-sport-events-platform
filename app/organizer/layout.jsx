@@ -12,7 +12,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body class="bg-gray-100 text-gray-800">
+      <body className="bg-gray-100 text-gray-800">
         <div className="flex flex-col min-h-screen bg-gray-100">
           {/* Header */}
           <header className="bg-blue-500 text-white">
@@ -51,7 +51,7 @@ export default function RootLayout({ children }) {
           </header>
 
           {/* Main Content */}
-          <main className="flex-grow container mx-auto px-4 py-4">
+          <main id="__next" className="flex-grow container mx-auto px-4 py-4">
             {children}
           </main>
 

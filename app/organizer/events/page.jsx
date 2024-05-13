@@ -79,7 +79,7 @@ const EventListingPage = () => {
             <p className="truncate">{event.description}</p>
             <div className="flex justify-between items-center mt-4">
               <Link
-                href={`/events/${event.eventId}`}
+                href={`/organizer/events/${event.eventId}`}
                 className="text-blue-500 hover:underline"
               >
                 Details

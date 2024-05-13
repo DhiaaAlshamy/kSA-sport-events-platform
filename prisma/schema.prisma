@@ -40,6 +40,7 @@ model Event {
   organizer   User?     @relation(name: "OrganizerEvent", fields: [organizerId], references: [userId])
   Review      Review[]
   Ticket      Ticket[]
+  medias      Media[]
 }
 
 model User {
@@ -64,11 +65,13 @@ enum UserRole {
 }
 
 model Media {
-  mediaId Int     @id @default(autoincrement())
-  type    String?
-  url     String
-  postId  Int?
-  post    Post?   @relation(fields: [postId], references: [postId])
+  mediaId      Int     @id @default(autoincrement())
+  type         String?
+  url          String
+  postId       Int?
+  post         Post?   @relation(fields: [postId], references: [postId])
+  Event        Event?  @relation(fields: [eventEventId], references: [eventId])
+  eventEventId Int?
 }
 
 model Post {

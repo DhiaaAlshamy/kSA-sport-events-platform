@@ -12,8 +12,8 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body class="bg-gray-100 text-gray-800">
-        <div class="container mx-auto px-4">
+      <body className="bg-gray-100 text-gray-800">
+        <div className="container mx-auto px-4">
           {/* Header with Navigation, using gradient and typography enhancements */}
           <header className="bg-gradient-to-r from-blue-700 to-green-700 text-white py-4 shadow-md">
             <div className="container mx-auto px-4 flex justify-between items-center">
