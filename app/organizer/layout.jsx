@@ -28,8 +28,8 @@ export default function RootLayout({ children }) {
                 <Link href="/organizer/events" className="px-4 hover:underline">
                   Events
                 </Link>
-                <Link href="/organizer/clubs" className="px-4 hover:underline">
-                  Clubs
+                <Link href="/organizer/posts" className="px-4 hover:underline">
+                  Posts
                 </Link>
                 <Link
                   href="/organizer/profile"

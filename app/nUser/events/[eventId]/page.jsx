@@ -1,7 +1,6 @@
 "use client";
-// use client
 import React, { useEffect, useState } from "react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 
 const EventDetailsPage = ({ params }) => {
@@ -9,9 +8,12 @@ const EventDetailsPage = ({ params }) => {
   const [eventDetails, setEventDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedTicketId, setSelectedTicketId] = useState(null);
+  const [userId, setUserId] = useState(1); // Assume a logged-in user with userId 1
+
+  const router = useRouter();
 
   useEffect(() => {
-    // Fetch event details from API, ensure your API is set to join necessary tables
     fetch(`/api/event/${eventId}`)
       .then((response) => response.json())
       .then((data) => {
@@ -24,6 +26,22 @@ const EventDetailsPage = ({ params }) => {
         setLoading(false);
       });
   }, [eventId]);
+
+  const handleBookTicket = () => {
+    fetch("/api/ticket/book", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ticketId: selectedTicketId, userId }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        router.push(`/nUser/bookConfirm/?ticketId=${data.ticketId}`);
+      })
+      .catch((error) => {
+        console.error("Failed to book ticket:", error);
+        setError(error.message);
+      });
+  };
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
@@ -65,14 +83,24 @@ const EventDetailsPage = ({ params }) => {
                 <p>Price: ${ticket.price.toFixed(2)}</p>
                 <p>Seat: {ticket.seatNumber}</p>
                 <p>Available: {ticket.isAvailable ? "Yes" : "No"}</p>
+                {ticket.isAvailable && (
+                  <button
+                    className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded mt-2"
+                    onClick={() => setSelectedTicketId(ticket.ticketId)}
+                  >
+                    Select Ticket
+                  </button>
+                )}
               </div>
             ))}
-          <Link
-            href={`/book/${eventId}`}
-            className="mt-4 inline-block bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
-          >
-            Book Now
-          </Link>
+          {selectedTicketId && (
+            <button
+              className="mt-4 inline-block bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
+              onClick={handleBookTicket}
+            >
+              Book Now
+            </button>
+          )}
           <div className="mt-4">
             <h2 className="text-2xl font-bold">Reviews</h2>
             {eventDetails.Review &&
