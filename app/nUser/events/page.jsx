@@ -7,7 +7,7 @@ const EventListingPage = () => {
 
   useEffect(() => {
     // Example fetch call - replace with your actual API endpoint
-    fetch("/api/events")
+    fetch("/api/event")
       .then((response) => response.json())
       .then((data) => setEvents(data));
   }, []);
@@ -20,7 +20,7 @@ const EventListingPage = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {events.map((event) => (
           <div
-            key={event.event_id}
+            key={event.eventId}
             className="bg-white rounded-lg p-4 shadow-md hover:shadow-lg"
           >
             <h2 className="text-xl font-semibold">{event.name}</h2>
@@ -30,7 +30,7 @@ const EventListingPage = () => {
               {new Date(event.end_date).toLocaleDateString()}
             </p>
             <Link
-              href={`/events/${event.event_id}`}
+              href={`events/${event.eventId}`}
               className="text-blue-500 hover:text-blue-600"
             >
               Learn more

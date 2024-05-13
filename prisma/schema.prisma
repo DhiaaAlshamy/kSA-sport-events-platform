@@ -16,6 +16,7 @@ model Club {
   description String?
   logoUrl     String?
   foundedDate DateTime?
+  followers   User[]
 }
 
 model Comment {
@@ -51,6 +52,9 @@ model User {
   posts           Post[]
   organizedEvents Event[]   @relation(name: "OrganizerEvent")
   reviews         Review[]
+  Clubs           Club[]
+  clubClubId      Int?
+  Tickets         Ticket[]
 }
 
 enum UserRole {
@@ -94,4 +98,6 @@ model Ticket {
   seatNumber  String?
   isAvailable Boolean?
   event       Event?   @relation(fields: [eventId], references: [eventId])
+  booked_for  User?    @relation(fields: [userUserId], references: [userId])
+  userUserId  Int?
 }
