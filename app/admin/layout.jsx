@@ -21,20 +21,20 @@ export default function RootLayout({ children }) {
             <div className="container mx-auto px-4 py-4 flex justify-between items-center">
               <h1 className="text-lg font-bold">KSA Sports Events Platform</h1>
               <nav>
-                <Link href="/nUser/dashboard" className="px-4 hover:underline">
+                <Link href="/admin/dashboard" className="px-4 hover:underline">
                   Home
                 </Link>
-                <Link href="/nUser/events" className="px-4 hover:underline">
+                <Link href="/admin/events" className="px-4 hover:underline">
                   Events
                 </Link>
                 <Link href="/nUser/clubs" className="px-4 hover:underline">
                   Clubs
                 </Link>
-                <Link href="/nUser/profile" className="px-4 hover:underline">
-                  Profile
+                <Link href="/admin/users" className="px-4 hover:underline">
+                  Users
                 </Link>
                 <Link
-                  href="/nUser/notifications"
+                  href="/admin/notifications"
                   className="px-4 hover:underline"
                 >
                   Notifications

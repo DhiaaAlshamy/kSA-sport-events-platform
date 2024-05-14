@@ -1,14 +1,18 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 
 const ProfilePage = () => {
   const [userInfo, setUserInfo] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { data: session } = useSession();
+  // console.log(session);
 
   useEffect(() => {
-    fetch(`/api/user/1`)
+    console.log(session);
+    fetch(`/api/user/${session?.user.userId}`)
       .then((response) => response.json())
       .then((data) => {
         setUserInfo(data);
@@ -19,7 +23,7 @@ const ProfilePage = () => {
         setError(error.message);
         setLoading(false);
       });
-  }, []);
+  }, [session]);
 
   if (loading) return <div className="text-center">Loading...</div>;
   if (error) return <div className="text-center">Error: {error}</div>;

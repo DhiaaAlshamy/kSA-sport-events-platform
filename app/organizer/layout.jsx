@@ -1,6 +1,7 @@
 import Link from "next/link";
 import "@/app/globals.css";
 import { Inter } from "next/font/google";
+import SessionProvider from "../providers/sesstionProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -52,7 +53,7 @@ export default function RootLayout({ children }) {
 
           {/* Main Content */}
           <main id="__next" className="flex-grow container mx-auto px-4 py-4">
-            {children}
+            <SessionProvider>{children}</SessionProvider>
           </main>
 
           {/* Footer */}

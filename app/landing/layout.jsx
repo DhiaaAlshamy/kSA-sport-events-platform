@@ -1,6 +1,7 @@
 import Link from "next/link";
 import "@/app/globals.css";
 import { Inter } from "next/font/google";
+import SessionProvider from "@/app/providers/sesstionProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -31,7 +32,7 @@ export default function RootLayout({ children }) {
               </nav>
             </div>
           </header>
-          {children}
+          <SessionProvider>{children}</SessionProvider>
           {/* Footer Section with minimalistic approach */}
           <footer className="text-center p-4 bg-gray-900 text-white">
             <p>Your company name, 2023</p>

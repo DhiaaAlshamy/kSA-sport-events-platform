@@ -2,16 +2,21 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import SignUpModal from "@/app/components/signupModal";
-export default function Page() {
-  const [isModalOpen, setModalOpen] = useState(false);
+import LoginModal from "@/app/components/LoginModal";
 
-  const openModal = () => setModalOpen(true);
-  const closeModal = () => setModalOpen(false);
+export default function Page() {
+  const [isSignUpModalOpen, setSignUpModalOpen] = useState(false);
+  const [isLoginModalOpen, setLoginModalOpen] = useState(false);
+
+  const openSignUpModal = () => setSignUpModalOpen(true);
+  const closeSignUpModal = () => setSignUpModalOpen(false);
+
+  const openLoginModal = () => setLoginModalOpen(true);
+  const closeLoginModal = () => setLoginModalOpen(false);
+
   return (
     <>
-      {/* Hero Section with background image and a vibrant call to action */}
-
-      <div className="text-center py-24 hero-background  bg-[url('https://via.placeholder.com/1200x800')] bg-cover bg-center text-white relative">
+      <div className="text-center py-24 hero-background bg-[url('https://via.placeholder.com/1200x800')] bg-cover bg-center text-white relative">
         <div className="absolute inset-0 bg-black opacity-50"></div>
         <div className="relative z-10">
           <h1 className="text-5xl font-bold">
@@ -21,15 +26,21 @@ export default function Page() {
             Your ultimate destination for all sports-related activities.
           </p>
           <button
-            onClick={openModal}
+            onClick={openSignUpModal}
             className="mt-6 px-6 py-2 bg-red-600 text-white rounded-md shadow-lg hover:bg-red-700"
           >
             Sign Up Now!
           </button>
+          <button
+            onClick={openLoginModal}
+            className="mt-6 px-6 py-2 bg-blue-600 text-white rounded-md shadow-lg hover:bg-blue-700"
+          >
+            Login
+          </button>
         </div>
       </div>
 
-      {/* About Section with richer text content and improved spacing */}
+      {/* About Section */}
       <section id="about" className="bg-gray-100 py-16">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-green-700 text-center">
@@ -45,7 +56,7 @@ export default function Page() {
         </div>
       </section>
 
-      {/* Features Section with Cards */}
+      {/* Features Section */}
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {[
@@ -85,7 +96,7 @@ export default function Page() {
         </div>
       </div>
 
-      {/* Services Section with enhanced layout */}
+      {/* Services Section */}
       <section id="services" className="py-16 bg-blue-50">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center text-blue-700">
@@ -121,7 +132,7 @@ export default function Page() {
         </div>
       </section>
 
-      {/* Contact Section with a more interactive approach */}
+      {/* Contact Section */}
       <section id="contact" className="py-16 bg-white">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center text-green-700">
@@ -167,13 +178,13 @@ export default function Page() {
                 <div className="w-full px-3">
                   <label
                     className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                    for="grid-password"
+                    htmlFor="grid-email"
                   >
                     Email
                   </label>
                   <input
                     className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                    id="grid-password"
+                    id="grid-email"
                     type="email"
                     placeholder="email@example.com"
                   />
@@ -183,7 +194,7 @@ export default function Page() {
                 <div className="w-full px-3">
                   <label
                     className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                    for="grid-message"
+                    htmlFor="grid-message"
                   >
                     Message
                   </label>
@@ -204,7 +215,8 @@ export default function Page() {
             </form>
           </div>
         </div>
-        {isModalOpen && <SignUpModal onClose={closeModal} />}
+        {isSignUpModalOpen && <SignUpModal onClose={closeSignUpModal} />}
+        {isLoginModalOpen && <LoginModal onClose={closeLoginModal} />}
       </section>
     </>
   );
