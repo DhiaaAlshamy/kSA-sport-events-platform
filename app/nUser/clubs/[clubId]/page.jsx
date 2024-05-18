@@ -1,108 +1,156 @@
 "use client";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 
 const ClubDetailsPage = ({ params }) => {
-  const [club, setClub] = useState(null);
+  const { clubId } = params;
+  const { data: session, status } = useSession();
+  const [clubData, setClubData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { clubId } = params;
   const [isFollowing, setIsFollowing] = useState(false);
-  const userId = 1; // This should be dynamically determined based on the logged-in user
 
   useEffect(() => {
-    if (!clubId) return;
     fetch(`/api/club/${clubId}`)
       .then((response) => response.json())
       .then((data) => {
-        setClub(data);
-        setIsFollowing(data.followers?.includes(userId)); // Check for followers safely
+        if (data.error) {
+          setError(data.error);
+        } else {
+          setClubData(data);
+          if (
+            status === "authenticated" &&
+            data.followers.some(
+              (follower) => follower.userId === session.userId
+            )
+          ) {
+            setIsFollowing(true);
+          }
+        }
         setLoading(false);
       })
       .catch((error) => {
-        console.error("Failed to fetch club details:", error);
-        setError(error.message);
+        console.error("Failed to fetch club data:", error);
+        setError("Failed to fetch club data");
         setLoading(false);
       });
-  }, [clubId]);
+  }, [clubId, session, status]);
 
-  const handleFollow = () => {
-    const method = isFollowing ? "DELETE" : "POST";
-    fetch(`/api/club/${clubId}/follow`, {
-      method,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId }),
-    })
-      .then((response) => {
-        if (response.ok) setIsFollowing(!isFollowing);
-      })
-      .catch((error) =>
-        console.error("Failed to update follow status:", error)
-      );
+  const handleFollow = async () => {
+    if (status === "authenticated") {
+      await fetch(`/api/club/${clubId}/follow`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId: session.userId }),
+      });
+      setIsFollowing(true);
+    }
   };
 
-  if (loading)
+  const handleUnfollow = async () => {
+    if (status === "authenticated") {
+      await fetch(`/api/club/${clubId}/unfollow`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId: session.userId }),
+      });
+      setIsFollowing(false);
+    }
+  };
+
+  if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">
         Loading...
       </div>
     );
-  if (error)
+  }
+
+  if (error) {
     return (
       <div className="text-red-500 text-center mt-4">{`Error: ${error}`}</div>
     );
-  if (!club) return <div className="text-center mt-4">No club found.</div>;
+  }
+
+  if (!clubData) {
+    return <div className="text-center mt-4">No club data available</div>;
+  }
 
   return (
-    <div className="bg-gray-100 min-h-screen p-8">
-      <div className="container mx-auto max-w-4xl">
-        <h1 className="text-3xl font-bold text-center text-indigo-600 mb-6">
-          {club.name}
-        </h1>
-        <div className="flex flex-col items-center mb-6">
-          {club.logoUrl ? (
+    <div className="container mx-auto px-4 py-4">
+      <h1 className="text-3xl font-bold text-center my-4">{clubData.name}</h1>
+      <div className="bg-white p-6 rounded-lg shadow-md">
+        <h2 className="text-2xl font-bold mb-4">Club Information</h2>
+        {clubData.logoUrl && (
+          <div className="flex justify-center">
             <Image
-              src="/default-club-logo.png"
+              src={clubData.logoUrl}
               alt="Club Logo"
               width={200}
               height={200}
-              className="rounded-full"
+              className="rounded-lg"
             />
-          ) : (
-            <div className="w-48 h-48 bg-gray-300 flex items-center justify-center rounded-full">
-              <span className="text-sm text-gray-600">No Image Available</span>
-            </div>
-          )}
-        </div>
-        <p className="text-lg text-center text-gray-700 mb-4">
-          {club.description || "No description available."}
+          </div>
+        )}
+        <p className="mt-4">
+          <strong>Description:</strong>{" "}
+          {clubData.description || "No description available."}
         </p>
-        {club.foundedDate && (
-          <p className="text-sm text-center text-gray-600 mb-6">
-            Founded: {new Date(club.foundedDate).toLocaleDateString()}
+        {clubData.foundedDate && (
+          <p className="mt-2">
+            <strong>Founded:</strong>{" "}
+            {new Date(clubData.foundedDate).toLocaleDateString()}
           </p>
         )}
-        <div className="text-center mb-4">
-          <button
-            className={`px-4 py-2 rounded font-bold text-white ${
-              isFollowing
-                ? "bg-red-500 hover:bg-red-600"
-                : "bg-blue-500 hover:bg-blue-600"
-            }`}
-            onClick={handleFollow}
-          >
-            {isFollowing ? "Unfollow" : "Follow"}
-          </button>
-        </div>
-        <div className="flex justify-center">
-          <Link
-            href="../clubs"
-            className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded"
-          >
-            Back to Clubs List
-          </Link>
-        </div>
+        {status === "authenticated" && (
+          <div className="mt-4 flex justify-center">
+            {isFollowing ? (
+              <button
+                onClick={handleUnfollow}
+                className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded"
+              >
+                Unfollow
+              </button>
+            ) : (
+              <button
+                onClick={handleFollow}
+                className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
+              >
+                Follow
+              </button>
+            )}
+          </div>
+        )}
+        <h2 className="text-2xl font-bold my-4">Followers</h2>
+        {clubData.followers.length > 0 ? (
+          clubData.followers.map((follower) => (
+            <div key={follower.userId} className="mb-4 p-4 border rounded">
+              <p>
+                <strong>Username:</strong> {follower.username}
+              </p>
+              <p>
+                <strong>Email:</strong> {follower.email}
+              </p>
+              <p>
+                <strong>Role:</strong> {follower.role}
+              </p>
+              <Link
+                href={`/profile/${follower.userId}`}
+                className="mt-2 inline-block bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
+              >
+                View Profile
+              </Link>
+            </div>
+          ))
+        ) : (
+          <p>No followers available</p>
+        )}
       </div>
     </div>
   );

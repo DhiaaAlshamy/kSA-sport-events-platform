@@ -34,29 +34,56 @@ import { NextResponse } from "next/server";
 // }
 
 // GET: Fetch a single user by ID
+
 export async function GET(request, { params }) {
   const { userId } = params;
+
   try {
     const user = await prisma.user.findUnique({
-      where: {
-        userId: parseInt(userId), // Make sure userId is an integer if your database expects an integer
-      },
+      where: { userId: parseInt(userId) },
       include: {
-        posts: true,
+        posts: {
+          include: {
+            comments: true,
+            medias: true,
+          },
+        },
         comments: true,
-        reviews: true,
-        organizedEvents: true,
-        Clubs: true,
-        Tickets: true,
+        organizedEvents: {
+          include: {
+            Review: true,
+            Ticket: true,
+            medias: true,
+          },
+        },
+        Tickets: {
+          include: {
+            event: true,
+          },
+        },
+        reviews: {
+          include: {
+            event: true,
+          },
+        },
       },
     });
+
     if (!user) {
-      return new NextResponse("User not found", { status: 404 });
+      return new Response(JSON.stringify({ error: "User not found" }), {
+        status: 404,
+        headers: { "Content-Type": "application/json" },
+      });
     }
-    return NextResponse.json(user);
+
+    return new Response(JSON.stringify(user), {
+      headers: { "Content-Type": "application/json" },
+      status: 200,
+    });
   } catch (error) {
-    return new NextResponse(JSON.stringify({ error: error.message }), {
+    return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
+      headers: { "Content-Type": "application/json" },
     });
   }
 }

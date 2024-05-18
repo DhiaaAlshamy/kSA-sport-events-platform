@@ -2,14 +2,15 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { useSession } from "next-auth/react";
 
 const EventDetailsPage = ({ params }) => {
   const { eventId } = params;
+  const { data: session, status } = useSession();
   const [eventDetails, setEventDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedTicketId, setSelectedTicketId] = useState(null);
-  const [userId, setUserId] = useState(1); // Assume a logged-in user with userId 1
 
   const router = useRouter();
 
@@ -17,12 +18,16 @@ const EventDetailsPage = ({ params }) => {
     fetch(`/api/event/${eventId}`)
       .then((response) => response.json())
       .then((data) => {
-        setEventDetails(data);
+        if (data.error) {
+          setError(data.error);
+        } else {
+          setEventDetails(data);
+        }
         setLoading(false);
       })
       .catch((error) => {
         console.error("Failed to fetch event details:", error);
-        setError(error.message);
+        setError("Failed to fetch event details");
         setLoading(false);
       });
   }, [eventId]);
@@ -31,7 +36,10 @@ const EventDetailsPage = ({ params }) => {
     fetch("/api/ticket/book", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ticketId: selectedTicketId, userId }),
+      body: JSON.stringify({
+        ticketId: selectedTicketId,
+        userId: session.userId,
+      }),
     })
       .then((response) => response.json())
       .then((data) => {
@@ -39,7 +47,7 @@ const EventDetailsPage = ({ params }) => {
       })
       .catch((error) => {
         console.error("Failed to book ticket:", error);
-        setError(error.message);
+        setError("Failed to book ticket");
       });
   };
 
@@ -62,7 +70,7 @@ const EventDetailsPage = ({ params }) => {
             height={1000}
           />
           <p className="text-lg text-gray-700 mt-4">
-            {eventDetails.description}
+            {eventDetails.description || "No description available."}
           </p>
           <p className="text-gray-600">
             {new Date(eventDetails.startDate).toLocaleString()} -{" "}

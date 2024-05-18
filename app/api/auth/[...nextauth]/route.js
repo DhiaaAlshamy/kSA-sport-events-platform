@@ -17,7 +17,7 @@ const authOptions = {
 
         if (user && user.password === credentials.password) {
           return {
-            id: user.id,
+            id: user.userId,
             email: user.email,
             role: user.role,
           };
@@ -39,12 +39,13 @@ const authOptions = {
       if (token) {
         session.userId = token.id;
         session.role = token.role;
+        session.user.email = token.email; // Ensure the email is also included
       }
       return session;
     },
   },
   pages: {
-    signIn: "/login",
+    signIn: "/landing/home",
   },
   secret: process.env.NEXTAUTH_SECRET,
 };

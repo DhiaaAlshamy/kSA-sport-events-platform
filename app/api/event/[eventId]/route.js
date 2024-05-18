@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import { NextResponse } from "next/server";
 const prisma = new PrismaClient();
 
 export async function GET(request, { params }) {
@@ -27,24 +28,50 @@ export async function GET(request, { params }) {
 }
 
 export async function PUT(request, { params }) {
+  const eventId = parseInt(params.eventId);
+  const data = await request.json();
+
   try {
-    const id = params.eventId;
-    const { ...data } = await request.json();
-    const item = await prisma.event.update({
-      where: { eventId: parseInt(id) },
+    const updatedEvent = await prisma.event.update({
+      where: { eventId },
       data: {
-        ...data,
-        startDate: new Date(data.startDate),
-        endDate: new Date(data.endDate),
+        name: data.name,
+        description: data.description,
+        startDate: data.startDate ? new Date(data.startDate) : undefined,
+        endDate: data.endDate ? new Date(data.endDate) : undefined,
+        location: data.location,
+        medias: {
+          deleteMany: {}, // Delete existing media
+          create: data.mediaUrls
+            .filter((url) => url) // Filter out empty URLs
+            .map((url) => ({ url })), // Add new media
+        },
+      },
+      include: {
+        medias: true,
       },
     });
-    return new Response(JSON.stringify(item), {
-      headers: { "Content-Type": "application/json" },
+    return NextResponse.json(updatedEvent);
+  } catch (error) {
+    return new NextResponse(JSON.stringify({ error: error.message }), {
+      status: 500,
+    });
+  }
+}
+
+// DELETE: Delete an event
+export async function DELETE(request, { params }) {
+  const eventId = parseInt(params.eventId);
+
+  try {
+    await prisma.event.delete({
+      where: { eventId },
+    });
+    return new NextResponse(JSON.stringify({ message: "Event deleted" }), {
       status: 200,
     });
   } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
-      headers: { "Content-Type": "application/json" },
+    return new NextResponse(JSON.stringify({ error: error.message }), {
       status: 500,
     });
   }

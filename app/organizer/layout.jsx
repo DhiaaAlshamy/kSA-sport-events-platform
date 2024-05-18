@@ -2,6 +2,7 @@ import Link from "next/link";
 import "@/app/globals.css";
 import { Inter } from "next/font/google";
 import SessionProvider from "../providers/sesstionProvider";
+import LogoutButton from "@/app/components/logout";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -45,9 +46,7 @@ export default function RootLayout({ children }) {
                   Notifications
                 </Link>
               </nav>
-              <button className="bg-blue-700 hover:bg-blue-800 py-2 px-4 rounded">
-                Log Out
-              </button>
+              <LogoutButton />
             </div>
           </header>
 

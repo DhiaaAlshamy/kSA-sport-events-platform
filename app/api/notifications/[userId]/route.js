@@ -1,63 +1,80 @@
 import { PrismaClient } from "@prisma/client";
+
 const prisma = new PrismaClient();
 
-export async function GET(req, { params }) {
-  const userId = params.userId; // Assume userId is passed as a query parameter
+export async function GET(request, { params }) {
+  const userId = parseInt(params.userId, 10);
 
   try {
-    // Fetch clubs followed by the user
+    // Get the clubs followed by the user
     const followedClubs = await prisma.user.findUnique({
-      where: { userId: parseInt(userId) },
-      include: {
-        Clubs: true, // Include clubs the user follows
+      where: { userId },
+      select: {
+        Clubs: {
+          select: {
+            clubId: true,
+            name: true,
+            logoUrl: true,
+          },
+        },
       },
     });
 
     if (!followedClubs) {
-      res.status(404).json({ error: "User not found or follows no clubs" });
-      return;
+      return new Response(
+        JSON.stringify({ followedClubs: [], posts: [], events: [] }),
+        {
+          headers: { "Content-Type": "application/json" },
+          status: 200,
+        }
+      );
     }
 
-    // Extract club IDs
-    const clubIds = followedClubs.Clubs.map((club) => club.clubId);
-
-    // Fetch posts related to followed clubs
+    // Get the posts related to the clubs that the user follows
     const posts = await prisma.post.findMany({
       where: {
+        user: {
+          clubClubId: {
+            in: followedClubs.Clubs.map((club) => club.clubId),
+          },
+        },
       },
       include: {
-        user: true, // Include user details of the post
-        comments: true, // Include comments on the post
-        medias: true, // Include media associated with the post
+        user: true,
+        comments: true,
+        medias: true,
+      },
+      orderBy: {
+        timestamp: "desc",
       },
     });
 
-    // Fetch events organized by followed clubs
+    // Get the events related to the clubs that the user follows
     const events = await prisma.event.findMany({
       where: {
-        organizerId: { in: clubIds },
+        organizerId: {
+          in: followedClubs.Clubs.map((club) => club.clubId),
+        },
       },
       include: {
-        organizer: true, // Include details of the organizer
-        Ticket: true, // Include tickets available for the events
+        organizer: true,
       },
     });
 
-    // Respond with combined data
     return new Response(
-      JSON.stringify({
-        followedClubs: followedClubs.Clubs,
-        posts,
-        events,
-      }),
+      JSON.stringify({ followedClubs: followedClubs.Clubs, posts, events }),
       {
         headers: { "Content-Type": "application/json" },
         status: 200,
       }
     );
   } catch (error) {
+    console.error(error);
     return new Response(JSON.stringify({ error: error.message }), {
+      headers: { "Content-Type": "application/json" },
       status: 500,
     });
   }
 }
+
+

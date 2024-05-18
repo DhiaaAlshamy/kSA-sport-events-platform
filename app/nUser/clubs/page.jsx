@@ -48,7 +48,7 @@ const ClubListingPage = () => {
               <h2 className="text-xl font-bold text-gray-800">{club.name}</h2>
               {club.logoUrl ? (
                 <Image
-                  src="/default-club-logo.png"
+                  src={club.logoUrl || "/default-club-logo.png"}
                   alt="Club Logo"
                   width={160}
                   height={160}
@@ -68,7 +68,7 @@ const ClubListingPage = () => {
                 </p>
               )}
               <Link
-                href={`clubs/${club.clubId}`}
+                href={`/nUser/clubs/${club.clubId}`}
                 className="mt-4 inline-block bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
               >
                 View Details

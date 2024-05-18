@@ -27,17 +27,11 @@ export default function RootLayout({ children }) {
                 <Link href="/admin/events" className="px-4 hover:underline">
                   Events
                 </Link>
-                <Link href="/nUser/clubs" className="px-4 hover:underline">
+                <Link href="/admin/clubs" className="px-4 hover:underline">
                   Clubs
                 </Link>
                 <Link href="/admin/users" className="px-4 hover:underline">
                   Users
-                </Link>
-                <Link
-                  href="/admin/notifications"
-                  className="px-4 hover:underline"
-                >
-                  Notifications
                 </Link>
               </nav>
               <LogoutButton />

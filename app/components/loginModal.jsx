@@ -25,17 +25,17 @@ const LoginModal = ({ onClose }) => {
         res.json()
       );
 
-      setUser({ email, role: session.user.role });
+      setUser({ email, role: session.role, userId: session.userId });
 
-      if (session.user.role === "Admin") {
+      if (session.role === "Admin") {
         router.push("/admin/");
-      } else if (session.user.role === "Organizer") {
+      } else if (session.role === "Organizer") {
         router.push("/organizer/");
-      } else if (session.user.role === "NormalUser") {
+      } else if (session.role === "NormalUser") {
         router.push("/nUser/");
       } else {
         console.log(session);
-        // router.push("/");
+        router.push("/");
       }
       onClose();
     } else {
@@ -44,7 +44,7 @@ const LoginModal = ({ onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center">
+    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-10">
       <div className="bg-white p-6 rounded-lg shadow-lg w-96">
         <h2 className="text-2xl font-bold mb-4">Login</h2>
         <form onSubmit={handleSubmit}>
@@ -97,7 +97,3 @@ const LoginModal = ({ onClose }) => {
 };
 
 export default LoginModal;
-
-
-            
-

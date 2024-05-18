@@ -1,64 +1,33 @@
-import { PrismaClient } from "@prisma/client";
-const prisma = new PrismaClient();
+import { NextResponse } from "next/server";
+import prisma from "@/app/lib/prisma"; // Ensure the correct import path
 
-export async function GET(request) {
+// GET: Fetch all clubs
+export async function GET() {
   try {
-    const items = await prisma.club.findMany({});
-    return new Response(JSON.stringify(items), {
-      headers: { "Content-Type": "application/json" },
-      status: 200,
-    });
+    const clubs = await prisma.club.findMany();
+    return NextResponse.json(clubs);
   } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
+    return new NextResponse(JSON.stringify({ error: error.message }), {
       status: 500,
     });
   }
 }
 
+
+// POST: Create a new club
 export async function POST(request) {
+  const data = await request.json();
   try {
-    const itemData = await request.json();
-    const item = await prisma.club.create({
-      data: itemData,
+    const newData = {
+      ...data,
+      foundedDate: data.foundedDate ? new Date(data.foundedDate) : null,
+    };
+    const club = await prisma.club.create({
+      data: newData,
     });
-    return new Response(JSON.stringify(item), {
-      headers: { "Content-Type": "application/json" },
-      status: 201,
-    });
+    return NextResponse.json(club, { status: 201 });
   } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-    });
-  }
-}
-
-export async function PUT(request) {
-  try {
-    const { id, ...data } = await request.json();
-    const item = await prisma.club.update({
-      where: { id },
-      data,
-    });
-    return new Response(JSON.stringify(item), {
-      headers: { "Content-Type": "application/json" },
-      status: 200,
-    });
-  } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-    });
-  }
-}
-
-export async function DELETE(request) {
-  try {
-    const { id } = await request.json();
-    await prisma.club.delete({
-      where: { id },
-    });
-    return new Response(null, { status: 204 });
-  } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
+    return new NextResponse(JSON.stringify({ error: error.message }), {
       status: 500,
     });
   }
